@@ -2,9 +2,12 @@
  *  
  * for some purpose, we need map meta-data and sequence data in certain property-space;
  * such as collection of time-squence data, we want scale down or up the time dimmension;
- * in a larger scope, a lot of types of data can procced by this techs. we call it dimmension-scale;
- * here, we given a simple dimmension-scale method by a map and reduce tech. as following.
+ * in a larger scope, a lot of types of data can procced by this techs.
+ *  we call it dimmension-scale;
+ * here, we given a simple dimmension-scale method by a map and reduce tech. 
+ * as following.
  * all suggestions and complaints are welcome!
+ * 
  * @autho linkwisdom
  * @mail liu@liandong.org
  * @date 2013-04-07 
@@ -12,11 +15,13 @@
 
 var scale = {};
 /**
- * scale.compute will hand meta-data with a map-reduce procedure functions which are defined by task
+ * scale.compute will hand meta-data with a map-reduce procedure 
+ * functions which are defined by task
  * 
  * @param {Object} data
  * data: Array or Asociation Array object of souce metaData;
- * for asco. keys represent the indecies of items. such as timestamps or number indecies;
+ * for asco. keys represent the indecies of items. 
+ * such as timestamps or number indecies;
  * for array, data contains all items we need.
  * 
  * @param {Object} task
@@ -42,8 +47,10 @@ scale.compute = function (data, task) {
 /**
  * 
  * @param {Object} data meta-data
- * @param {Object} mapFunc should return an object with properties of key and value;
- * map-Function map one item to a certain colletion, the collection is indecied by the key;
+ * @param {Object} mapFunc should return an object
+ *  with properties of key and value;
+ * map-Function map one item to a certain colletion,
+ *  the collection is indecied by the key;
  * the return value can be a object or one computable number
  */
 function mapArray(data, mapFunc) {
@@ -116,11 +123,11 @@ function sum( arr, vkey) {
                 pre = pre[vkey];
             }
             return pre + next[vkey];
-        }
+        };
     }
     else {
         func = function(pre, next) {
-            return pre + next
+            return pre + next;
         };
     }
    
