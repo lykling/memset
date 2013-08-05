@@ -23,25 +23,18 @@ function getDimKey(time, dim) {
     switch(dim) {
         case 'minute':
             return time.getMinutes();
-            break;
         case 'hour':
             return time.getHours();
-            break;
         case 'date':
             return time.getDate();
-            break;
         case 'week':
             return getWeek(time);
-            break;
         case 'day':
             return time.getDay();
-            break;
         case 'month':
             return (time.getMonth() + 1);
-            break;
         case 'year':
             return time.getFullYear();
-            break;
         default:
             return time.getMonth();
     }
