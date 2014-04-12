@@ -1,0 +1,28 @@
+{
+  "author": {
+    "name": "liandong liu"
+  },
+  "contacts": [
+    "liu@liandong.org"
+  ],
+  "name": "memset",
+  "description": "memset",
+  "version": "0.0.1",
+  "main": "src/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/linkwisdom/memset.git"
+  },
+  "keywords": [
+    "memset",
+    "memory storage",
+    "storage"
+  ],
+  "engines": {
+    "node": "*"
+  },
+  "scripts": {
+    "test": "jasmine-node ./spec"
+  },
+  "license": "BSD"
+}
