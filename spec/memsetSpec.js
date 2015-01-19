@@ -145,6 +145,19 @@ describe('jasmine-node', function () {
         expect(items.length).toBe(data.length);
     });
 
+    it('使用数据查找', function () {
+        var items;
+        var arr;
+
+        arr = [30, 31, 32, 33, 34, 35, 36];
+        items = db.user.find({age: {$in: arr}});
+        expect(items.length).toBe(7);
+
+        arr = [89, 34, 22, 38, 56];
+        items = db.user.find({_id: {$nin: arr}});
+        expect(items.length).toBe(data.length - arr.length);
+    });
+
     it('删除', function () {
         var items;
         items = db.user.remove({age: {$in: [22, 23, 24]}});
@@ -180,26 +193,5 @@ describe('jasmine-node', function () {
         }));
         items = db.test.find();
         expect(items.length).toBe(11);
-    });
-
-    function getInitData(n) {
-        return Array.apply(null, new Array(n)).map(function (_, idx) {
-            return {
-                _id: idx,
-                name: 'user' + idx,
-                mod: idx % 100,
-                age: 20 + (idx % 20)
-            };
-        });
-    }
-
-    Array.apply(null, new Array(10)).forEach(function (_, idx) {
-        it('test' + idx, function () {
-            db.create('test' + idx, []);
-            db['test' + idx].insert(getInitData(idx));
-            var items;
-            items = db['test' + idx].find();
-            expect(items.length).toBe(idx);
-        });
     });
 });
