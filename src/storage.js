@@ -1,10 +1,12 @@
 /**
  * @file memory storage of dataset
- * 
+ *
  * @author Liandong Liu (liuliandong01@baidu.com)
+ * @author Pride Leong(liangjinping@baidu.com)
  */
+/* eslint-env node */
 
-/** 
+/**
  * 当前默认数据集
  * @inner
  * @type {Object}
@@ -22,35 +24,36 @@ var db = {
 
 /**
  * 初始化数据库
- * 
+ *
  * @param  {Object} data 初始化的数据集合
  * @return {Object}      当前数据集合
  * @public
  */
 exports.init = function (data) {
-    for (var item in data) {
-        db[item] = data[item];
-        this.define(item);
-    }
+    var me = this;
+    Object.keys(data).forEach(function (name) {
+        db[name] = data[name];
+        me.define(name);
+    });
     collection = db.global || {};
     return collection;
 };
 
 /**
  * 从当前集合获取值
- * 
+ *
  * @param  {string} key 数据键
  * @return {*}     对应key的值
  * @public
  */
 exports.get = function (key) {
-    return key? collection[key] : collection;
+    return key ? collection[key] : collection;
 };
 
 /**
  * 设定值
- * 
- * @param {string} key   数据键
+ *
+ * @param {string} key 数据键
  * @param {*} value 数据值
  * @return {Object} 当前集合
  * @public
@@ -62,7 +65,7 @@ exports.set = function (key, value) {
 
 /**
  * 使用集合
- * 
+ *
  * @param  {string} name 集合名称
  * @return {Object}                当前集合
  * @public
@@ -77,7 +80,7 @@ exports.use = function (name) {
 
 /**
  * 定义存取器
- * 
+ *
  * 支持类似mongodb写法
  * storage.aopackage.get('userid')
  *

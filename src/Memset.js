@@ -9,7 +9,7 @@
 /**
  * Memset
  *
- * @param {Array|Object} data data set
+ * @param {Array|Object} data document(s)
  * @constructor
  */
 function Memset(data) {
@@ -41,10 +41,24 @@ function $eq(valA, valB) {
     return valA === valB;
 }
 
+// 不等
+function $ne(valA, valB) {
+    return valA !== valB;
+}
+
+// 指定值在队列中
+function $in(val, arr) {
+    return -1 !== arr.indexOf(val);
+}
+// 指定的值不在队列中
+function $nin(val, arr) {
+    return -1 === arr.indexOf(val);
+}
+
 /**
  * 条件比较方法
  */
-var conditionMap = {
+var querySelectors = {
     // 大于
     $gt: $gt,
 
@@ -58,7 +72,16 @@ var conditionMap = {
     $lte: $lte,
 
     // 严格等于
-    $eq: $eq
+    $eq: $eq,
+
+    // 不等
+    $ne: $ne,
+
+    // 在队列中
+    $in: $in,
+
+    // 不在队列中
+    $nin: $nin
 };
 
 /**
@@ -100,7 +123,7 @@ var matchMap = {
     // 判断所级条件集是否均满足当前字段值
     'Object': function (item, field, condition) {
         return Object.keys(condition).every(function (key) {
-            var cmpFunc = conditionMap[key];
+            var cmpFunc = querySelectors[key];
             if ('Function' === getType(cmpFunc)) {
                 return cmpFunc(item[field], condition[key]);
             }
@@ -125,12 +148,9 @@ function goMatch(item, field, condition) {
 }
 
 /**
- *
- * @param {Object} criteria
- *  Specifies selection criteria using query operators.
- * @return {Function} callback
- *  Function to test each element of the array.
- *  Return true to keep the element, false otherwise
+ * 根据筛选条件生成筛选方法
+ * @param {Object} criteria 筛选条件
+ * @return {Function} callback 筛选方法
  */
 function matcher(criteria) {
     var fields = Object.keys(criteria || {});
@@ -144,10 +164,11 @@ function matcher(criteria) {
 /**
  * 抽取对象中的指定字段返回一个新的对象
  * @param {Object} obj 指定对象
- * @return {Object} ret
+ * @return {Object} ret 返回的新对象
  */
 function pick(obj) {
     return [].slice.call(arguments, 1).reduce(function (fields, field) {
+        // 将二维数组打平
         return fields.concat(field);
     }, []).reduce(function (ret, field) {
         ret[field] = obj[field];
@@ -158,39 +179,34 @@ function pick(obj) {
 Memset.prototype = {
     /**
      * @method find
-     * @param {Object} criteria
-     *  Specifies selection criteria using query operators.
-     * @param {Object} projection
-     *  Specifies the fields to return using projection operators
+     * @param {Object} criteria 查找条件
+     * @param {Object} projection 查找字段，不指定时直接返回源数据
      * @return {Array.<Object>} data set
      */
     find: function (criteria, projection) {
         var set = this.set.filter(matcher(criteria));
         if ('Object' === getType(projection)) {
+            var fields = Object.keys(projection);
             return set.map(function (item) {
-                return pick(item, Object.keys(projection));
+                return pick(item, fields);
             });
         }
         return set;
     },
 
     /**
+     * 移除数据
      * @method remove
      * @param {Object} criteria 筛选条件
      * @return {number} 集合长度
      */
     remove: function (criteria) {
         var set = this.set;
-        set.map(function (item, idx) {
-            var found = (matcher(criteria))(item, idx);
-            return found ? idx : null;
-        }).filter(function (idx) {
-            return !!idx;
-        }).sort(function (a, b) {
-            return b - a;
-        }).forEach(function (idx) {
-            set.splice(idx, 1);
-        });
+        set.reduceRight(function (_, item, idx, docs) {
+            if ((matcher(criteria))(item, idx)) {
+                docs.splice(idx, 1);
+            }
+        }, null);
         return this;
     },
 
@@ -200,13 +216,8 @@ Memset.prototype = {
      * @return {Memset} 返回自身，以便进行链式调用
      */
     insert: function (docs) {
-        this.set.concat(docs);
+        this.set = this.set.concat(docs);
         return this;
-    },
-    clear: function () {
-        this.set = this.set.filter(function(item) {
-            return item;
-        });
     }
 };
 
